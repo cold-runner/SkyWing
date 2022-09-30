@@ -1,0 +1,24 @@
+mode: "dev"
+port: 8081
+
+log:
+  level: "debug"
+  filename: "./log/skywing.log"
+  max_size: 1000
+  max_age: 3600
+  max_backups: 5
+
+mysql:
+  host: rm-bp1g6r2lq2b4kb779so.mysql.rds.aliyuncs.com
+  port: 3306
+  user: zzzheng
+  password: skys!1004
+  db: skywing
+  max_open_conns: 100
+  max_idle_conns: 20
+
+redis:
+  host: r-bp1kljor4s77o7q51bpd.redis.rds.aliyuncs.com
+  port: 6379
+  password: zzzheng:skysB!01
+  db: 0
