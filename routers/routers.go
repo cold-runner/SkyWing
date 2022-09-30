@@ -29,6 +29,7 @@ func SetupRouter() *gin.Engine {
 
 		v1.Use(middleware.JWTAuthMiddleware())
 		{
+			v1.PUT("/update:stuNum", userController.Update)
 			v1.GET("/ping", func(c *gin.Context) {
 				c.String(http.StatusOK, "pong")
 			})

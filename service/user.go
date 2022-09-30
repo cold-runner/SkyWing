@@ -10,12 +10,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"io/ioutil"
+	"time"
 )
 
 // UserSrv defines functions used to handle user request.
 type UserSrv interface {
 	Create(c *gin.Context, user *models.RegisterForm) error
-	Update(user *models.User) error
+	Update(user *models.RegisterForm) error
 	Delete(stuNum string) error
 	DeleteCollection(stuNum []string) error
 	Get(username string) (*models.User, error)
@@ -98,9 +99,24 @@ func (u *userService) Get(username string) (*models.User, error) {
 	return user, nil
 }
 
-func (u *userService) Update(user *models.User) error {
-	if err := u.store.Users().Update(user); err != nil {
-
+func (u *userService) Update(user *models.RegisterForm) error {
+	newInfo := &models.User{
+		UpdateTime:   time.Now(),
+		RegisterForm: *user,
+	}
+	// 将照片解码成图片
+	ddd, err := base64.StdEncoding.DecodeString(user.Photo)
+	if err != nil {
+		zap.L().Error("图片转base64失败, ", zap.Error(err))
+	}
+	path := fmt.Sprintf("photo/%s.jpg", newInfo.StuName)
+	if err := ioutil.WriteFile(path, ddd, 0666); err != nil {
+		zap.L().Error("照片写入失败, ", zap.Error(err))
+	}
+	newInfo.Photo = path
+	if err := u.store.Users().Update(newInfo); err != nil {
+		zap.L().Error("更新数据失败", zap.Error(err))
+		return err
 	}
 	return nil
 }

@@ -1,9 +1,11 @@
 package models
 
+import "time"
+
 type User struct {
-	UserID     uint64 `json:"user_id" db:"user_id"`
-	CreateTime string `json:"createTime" db:"create_time"`
-	UpdateTime string `json:"updateTime" db:"update_time"`
+	UserID     uint64    `json:"user_id" db:"user_id"`
+	CreateTime time.Time `json:"createTime" db:"create_time"`
+	UpdateTime time.Time `json:"updateTime" db:"update_time"`
 	RegisterForm
 }
 
