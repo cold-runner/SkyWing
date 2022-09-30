@@ -3,6 +3,7 @@ package routers
 import (
 	"Skywing/controller/middleware"
 	"Skywing/controller/user"
+	"Skywing/pkg/captcha"
 	"Skywing/settings"
 	"Skywing/store/mysql"
 	"github.com/gin-gonic/gin"
@@ -25,6 +26,7 @@ func SetupRouter() *gin.Engine {
 
 		v1.POST("/signUp", userController.Create)
 		v1.POST("/login", userController.Login)
+		v1.GET("/captcha", captcha.Captcha)
 		//v1.GET("/refresh_token", controller.RefreshTokenHandler)
 
 		v1.Use(middleware.JWTAuthMiddleware())

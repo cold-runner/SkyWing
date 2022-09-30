@@ -15,6 +15,7 @@ const (
 	CodeInvalidAuthFormat MyCode = 1007
 	CodeNotLogin          MyCode = 1008
 	CodeUpdateFailed      MyCode = 1009
+	CodeCaptchaFailed     MyCode = 1010
 )
 
 var msgFlags = map[MyCode]string{
@@ -30,6 +31,7 @@ var msgFlags = map[MyCode]string{
 	CodeInvalidAuthFormat: "认证格式有误",
 	CodeNotLogin:          "未登录",
 	CodeUpdateFailed:      "修改用户信息失败",
+	CodeCaptchaFailed:     "验证码错误",
 }
 
 func (c MyCode) Msg() string {

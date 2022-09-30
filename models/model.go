@@ -10,8 +10,10 @@ type User struct {
 }
 
 type LoginUser struct {
-	StuNum   string `json:"stuNum" validate:"valStuNum" db:"stu_num"`
-	Password string `json:"password" validate:"valStuPassword" db:"password"`
+	StuNum    string `json:"stuNum" validate:"valStuNum" db:"stu_num"`
+	Password  string `json:"password" validate:"valStuPassword" db:"password"`
+	Captcha   string `json:"captcha"`   // 验证码
+	CaptchaId string `json:"captchaId"` // 验证码ID
 }
 
 type RegisterForm struct {

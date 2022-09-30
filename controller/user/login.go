@@ -4,6 +4,7 @@ import (
 	"Skywing/controller"
 	"Skywing/models"
 	"Skywing/models/response"
+	"Skywing/pkg/captcha"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
@@ -20,6 +21,11 @@ func (u *UserController) Login(c *gin.Context) {
 	if err := controller.Val.Struct(fo); err != nil {
 		zap.L().Error("invalid params", zap.Error(err))
 		response.ResponseErrorWithMsg(c, response.CodeInvalidParams, err.Error())
+		return
+	}
+	// 验证码校验
+	if success := captcha.Store.Verify(fo.CaptchaId, fo.Captcha, true); !success {
+		response.ResponseError(c, response.CodeCaptchaFailed)
 		return
 	}
 	// 登录逻辑
