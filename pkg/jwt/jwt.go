@@ -12,11 +12,12 @@ import (
 // 我们这里需要额外记录一个UserID字段，所以要自定义结构体
 // 如果想要保存更多信息，都可以添加到这个结构体中
 type MyClaims struct {
-	UserID uint64 `json:"user_id"`
+	UserID        uint64 `json:"user_id"`       // 唯一标识
+	AuthorityName string `json:"authorityName"` // 角色名
 	jwt.StandardClaims
 }
 
-var mySecret = []byte("SkyWel2022!")
+var mySecret = []byte("sky2022Wel@02@")
 
 func keyFunc(_ *jwt.Token) (i interface{}, err error) {
 	return mySecret, nil
@@ -25,11 +26,13 @@ func keyFunc(_ *jwt.Token) (i interface{}, err error) {
 const TokenExpireDuration = time.Hour * 24
 
 // GenToken 生成access token 和 refresh token
-func GenToken(userID uint64) (aToken, rToken string, err error) {
+func GenToken(userID uint64, roleName string) (aToken, rToken string, err error) {
 	// 创建一个我们自己的声明
 	c := MyClaims{
-		userID, // 自定义字段
-		jwt.StandardClaims{
+		UserID:        userID,   // 唯一标识
+		AuthorityName: roleName, // 角色名
+
+		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(TokenExpireDuration).Unix(), // 过期时间
 			Issuer:    "sKyLab",                                   // 签发人
 		},
@@ -62,20 +65,20 @@ func ParseToken(tokenString string) (claims *MyClaims, err error) {
 }
 
 // RefreshToken 刷新AccessToken
-func RefreshToken(aToken, rToken string) (newAToken, newRToken string, err error) {
-	// refresh token无效直接返回
-	if _, err = jwt.Parse(rToken, keyFunc); err != nil {
-		return
-	}
-
-	// 从旧access token中解析出claims数据
-	var claims MyClaims
-	_, err = jwt.ParseWithClaims(aToken, &claims, keyFunc)
-	v, _ := err.(*jwt.ValidationError)
-
-	// 当access token是过期错误 并且 refresh token没有过期时就创建一个新的access token
-	if v.Errors == jwt.ValidationErrorExpired {
-		return GenToken(claims.UserID)
-	}
-	return
-}
+//func RefreshToken(aToken, rToken string) (newAToken, newRToken string, err error) {
+//	// refresh token无效直接返回
+//	if _, err = jwt.Parse(rToken, keyFunc); err != nil {
+//		return
+//	}
+//
+//	// 从旧access token中解析出claims数据
+//	var claims MyClaims
+//	_, err = jwt.ParseWithClaims(aToken, &claims, keyFunc)
+//	v, _ := err.(*jwt.ValidationError)
+//
+//	// 当access token是过期错误 并且 refresh token没有过期时就创建一个新的access token
+//	if v.Errors == jwt.ValidationErrorExpired {
+//		return GenToken(claims.UserID)
+//	}
+//	return
+//}

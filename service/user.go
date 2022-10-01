@@ -16,10 +16,10 @@ import (
 // UserSrv defines functions used to handle user request.
 type UserSrv interface {
 	Create(c *gin.Context, user *models.RegisterForm) error
-	Update(user *models.RegisterForm) error
+	Update(user *models.User) error
 	Delete(stuNum string) error
 	DeleteCollection(stuNum []string) error
-	Get(username string) (*models.User, error)
+	Get(stuNum string) (*models.User, error)
 	List() ([]models.User, error)
 
 	Login(ctx *gin.Context, loginUser *models.LoginUser) (*models.LoginedUser, error)
@@ -43,7 +43,6 @@ func (u *userService) List() ([]models.User, error) {
 
 func (u *userService) Create(c *gin.Context, passUser *models.RegisterForm) error {
 	res, _ := u.store.Users().Get(passUser.StuNum)
-
 	if res.StuNum == passUser.StuNum {
 		return fmt.Errorf("用户已存在")
 	}
@@ -67,13 +66,36 @@ func (u *userService) Create(c *gin.Context, passUser *models.RegisterForm) erro
 	if err != nil {
 		// id随机生成失败
 	}
-	var user = &models.User{
-		UserID:       snowId,
-		RegisterForm: *passUser,
+	user := &models.User{
+		UserID:     snowId,
+		CreateTime: time.Now(),
+		UpdateTime: time.Now(),
+		StuNum:     passUser.StuNum,
+		StuName:    passUser.StuName,
+		StuGender:  passUser.StuGender,
+		Major:      passUser.Major,
+		Qq:         passUser.Qq,
+		Mobile:     passUser.Mobile,
+		Province:   passUser.Province,
+		Photo:      passUser.Photo,
+		Introduce:  passUser.Introduce,
+		Password:   passUser.Password,
 	}
 	// 数据库插入数据
-	err = u.store.Users().Create(user)
-	return err
+	if err := u.store.Users().Create(user); err != nil {
+		return err
+	}
+
+	// 将萌新角色赋值给报名者
+	rc := &models.RoleCharacter{
+		Uuid: snowId,
+		Role: "newcomer",
+	}
+	if err := u.store.Roles().Create(rc); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (u *userService) DeleteCollection(stuNum []string) error {
@@ -91,18 +113,27 @@ func (u *userService) Delete(stuNum string) error {
 	return nil
 }
 
-func (u *userService) Get(username string) (*models.User, error) {
-	user, err := u.store.Users().Get(username)
+func (u *userService) Get(stuNum string) (*models.User, error) {
+	user, err := u.store.Users().Get(stuNum)
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (u *userService) Update(user *models.RegisterForm) error {
+func (u *userService) Update(user *models.User) error {
 	newInfo := &models.User{
-		UpdateTime:   time.Now(),
-		RegisterForm: *user,
+		UserID:     user.UserID,
+		UpdateTime: time.Now(),
+		StuNum:     user.StuNum,
+		StuName:    user.StuName,
+		StuGender:  user.StuGender,
+		Major:      user.Major,
+		Qq:         user.Qq,
+		Mobile:     user.Mobile,
+		Province:   user.Province,
+		Photo:      user.Photo,
+		Introduce:  user.Introduce,
 	}
 	// 将照片解码成图片
 	ddd, err := base64.StdEncoding.DecodeString(user.Photo)
@@ -131,8 +162,13 @@ func (u *userService) Login(c *gin.Context, loginUser *models.LoginUser) (userIn
 	if enPassword != get.Password {
 		return nil, fmt.Errorf("密码错误")
 	}
-	// 登录成功颁发token
-	accessToken, refreshToken, err := jwt.GenToken(get.UserID)
+	// 登录成功根据uuid和角色信息颁发token
+	role, err := u.store.Roles().Get(get.UserID)
+	if err != nil {
+		zap.L().Error("查询角色信息失败", zap.Error(err))
+		return nil, err
+	}
+	accessToken, refreshToken, err := jwt.GenToken(get.UserID, role.Role)
 	if err != nil {
 		zap.L().Error("token生成失败", zap.Error(err))
 		return nil, err

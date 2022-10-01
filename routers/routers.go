@@ -20,6 +20,7 @@ func SetupRouter() *gin.Engine {
 	if err != nil {
 		panic(err)
 	}
+
 	v1 := r.Group("/api/v1")
 	{
 		userController := user.NewUserController(storeIns)
@@ -29,16 +30,17 @@ func SetupRouter() *gin.Engine {
 		v1.GET("/captcha", captcha.Captcha)
 		//v1.GET("/refresh_token", controller.RefreshTokenHandler)
 
-		v1.Use(middleware.JWTAuthMiddleware())
+		v1.Use(middleware.JWTAuthMiddleware(), middleware.CasbinHandler())
 		{
-			v1.PUT("/update:stuNum", userController.Update)
-			v1.GET("/ping", func(c *gin.Context) {
-				c.String(http.StatusOK, "pong")
-			})
+			v1.PUT("/update", userController.Update)
+			v1.GET("/info", userController.GetInfo)
 
 		}
 	}
 
+	v1.GET("/ping", func(c *gin.Context) {
+		c.String(http.StatusOK, "pong")
+	})
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"msg": "404",

@@ -12,6 +12,7 @@ import (
 
 const (
 	ContextUserIDKey = "userID"
+	AuthorityName    = "userRoleName"
 )
 
 var (
@@ -45,8 +46,9 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 			c.Abort()
 			return
 		}
-		// 将当前请求的username信息保存到请求的上下文c上
+		// 将当前请求的uuid和角色名信息保存到请求的上下文c上
 		c.Set(ContextUserIDKey, mc.UserID)
+		c.Set(AuthorityName, mc.AuthorityName)
 		c.Next() // 后续的处理函数可以用过c.Get("userID")来获取当前请求的用户信息
 	}
 }

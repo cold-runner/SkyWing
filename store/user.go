@@ -10,6 +10,6 @@ type UserStore interface {
 	Update(user *models.User) error
 	Delete(stuNum string) error
 	DeleteCollection(stuNum []string) error
-	Get(username string) (*models.User, error)
+	Get(stuNum string) (*models.User, error)
 	List() ([]models.User, error)
 }

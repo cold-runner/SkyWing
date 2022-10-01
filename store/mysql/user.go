@@ -36,17 +36,18 @@ func (u *users) Create(reg *models.User) error {
 
 // Update updates a user account information.
 func (u *users) Update(reg *models.User) error {
-	sqlStr := "update user set stu_num = :stuNum, stu_name = :stuName, stu_gender = :stuGender, major = :major, qq = :qq, mobile = :mobile, province = :province, photo = :photo, introduce = :introduce"
+	sqlStr := "update user set stu_num = :stuNum, stu_name = :stuName, stu_gender = :stuGender, major = :major, qq = :qq, mobile = :mobile, province = :province, photo = :photo, introduce = :introduce, update_time= :updateTime"
 	_, err := u.db.NamedExec(sqlStr, map[string]interface{}{
-		"stuNum":    reg.StuNum,
-		"stuName":   reg.StuName,
-		"stuGender": reg.StuGender,
-		"major":     reg.Major,
-		"qq":        reg.Qq,
-		"mobile":    reg.Mobile,
-		"province":  reg.Province,
-		"photo":     reg.Photo,
-		"introduce": reg.Introduce,
+		"updateTime": time.Now(),
+		"stuNum":     reg.StuNum,
+		"stuName":    reg.StuName,
+		"stuGender":  reg.StuGender,
+		"major":      reg.Major,
+		"qq":         reg.Qq,
+		"mobile":     reg.Mobile,
+		"province":   reg.Province,
+		"photo":      reg.Photo,
+		"introduce":  reg.Introduce,
 	})
 	return err
 

@@ -16,6 +16,7 @@ const (
 	CodeNotLogin          MyCode = 1008
 	CodeUpdateFailed      MyCode = 1009
 	CodeCaptchaFailed     MyCode = 1010
+	CodePolicyFailed      MyCode = 1011
 )
 
 var msgFlags = map[MyCode]string{
@@ -32,6 +33,7 @@ var msgFlags = map[MyCode]string{
 	CodeNotLogin:          "未登录",
 	CodeUpdateFailed:      "修改用户信息失败",
 	CodeCaptchaFailed:     "验证码错误",
+	CodePolicyFailed:      "权限不足",
 }
 
 func (c MyCode) Msg() string {

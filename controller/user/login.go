@@ -11,6 +11,11 @@ import (
 
 func (u *UserController) Login(c *gin.Context) {
 	var fo models.LoginUser
+	// 验证码校验
+	if success := captcha.Store.Verify(fo.CaptchaId, fo.Captcha, true); !success {
+		response.ResponseError(c, response.CodeCaptchaFailed)
+		return
+	}
 	// 参数解析
 	if err := c.ShouldBindJSON(&fo); err != nil {
 		zap.L().Error("invalid params", zap.Error(err))
@@ -21,11 +26,6 @@ func (u *UserController) Login(c *gin.Context) {
 	if err := controller.Val.Struct(fo); err != nil {
 		zap.L().Error("invalid params", zap.Error(err))
 		response.ResponseErrorWithMsg(c, response.CodeInvalidParams, err.Error())
-		return
-	}
-	// 验证码校验
-	if success := captcha.Store.Verify(fo.CaptchaId, fo.Captcha, true); !success {
-		response.ResponseError(c, response.CodeCaptchaFailed)
 		return
 	}
 	// 登录逻辑

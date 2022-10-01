@@ -3,10 +3,19 @@ package models
 import "time"
 
 type User struct {
-	UserID     uint64    `json:"user_id" db:"user_id"`
-	CreateTime time.Time `json:"createTime" db:"create_time"`
-	UpdateTime time.Time `json:"updateTime" db:"update_time"`
-	RegisterForm
+	UserID     uint64    `json:"user_id" db:"user_id" validate:"-"`
+	CreateTime time.Time `json:"createTime" db:"create_time" validate:"-"`
+	UpdateTime time.Time `json:"updateTime" db:"update_time" validate:"-"`
+	StuNum     string    `json:"stuNum" db:"stu_num" validate:"valStuNum"`
+	StuName    string    `json:"stuName" db:"stu_name" validate:"valStuName"`
+	StuGender  string    `json:"stuGender" db:"stu_gender" validate:"valStuGender"`
+	Major      string    `json:"major" db:"major" validate:"valStuMajor"`
+	Qq         string    `json:"qq" db:"qq" validate:"valStuQq"`
+	Mobile     string    `json:"mobile" db:"mobile" validate:"valStuMobile"`
+	Province   string    `json:"province" db:"province" validate:"valStuProvince"`
+	Photo      string    `json:"photo" db:"photo" validate:"base64"`
+	Introduce  string    `json:"introduce" db:"introduce" validate:"valStuIntroduce"`
+	Password   string    `json:"password" db:"password" validate:"valStuPassword"`
 }
 
 type LoginUser struct {

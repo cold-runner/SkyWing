@@ -17,6 +17,9 @@ type datastore struct {
 func (ds *datastore) Users() store.UserStore {
 	return newUsers(ds)
 }
+func (ds *datastore) Roles() store.RoleStore {
+	return newRoles(ds)
+}
 
 func (ds *datastore) Close() error {
 	db := ds.db

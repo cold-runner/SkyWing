@@ -10,7 +10,7 @@ import (
 
 func (u *UserController) Update(c *gin.Context) {
 	// 获取请求参数
-	var newInfo models.RegisterForm
+	var newInfo models.User
 	// 参数解析
 	if err := c.ShouldBindJSON(&newInfo); err != nil {
 		zap.L().Error("invalid params", zap.Error(err))
