@@ -21,20 +21,22 @@ func SetupRouter() *gin.Engine {
 		panic(err)
 	}
 
+	// v1组api路径于业务强耦合！改不动了....
 	v1 := r.Group("/api/v1")
 	{
+		r.MaxMultipartMemory = 8 << 20 // 8 MiB
 		userController := user.NewUserController(storeIns)
-
+		v1.GET("ApplicantCount", userController.GetCount)
+		v1.GET("/captcha", captcha.Captcha)
+		//v1.GET("/sendSmsCode", userController.SendSmsCode)
 		v1.POST("/signUp", userController.Create)
 		v1.POST("/login", userController.Login)
-		v1.GET("/captcha", captcha.Captcha)
-		//v1.GET("/refresh_token", controller.RefreshTokenHandler)
 
 		v1.Use(middleware.JWTAuthMiddleware(), middleware.CasbinHandler())
 		{
-			v1.PUT("/update", userController.Update)
-			v1.GET("/info", userController.GetInfo)
-
+			v1.PUT("/update/:uuid", userController.Update)
+			v1.GET("/info/:uuid", userController.GetInfo)
+			v1.PUT("/logout", userController.Logout)
 		}
 	}
 

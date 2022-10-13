@@ -10,19 +10,21 @@ import (
 	"sync"
 )
 
-type datastore struct {
-	db *sqlx.DB
+type Datastore struct {
+	Db *sqlx.DB
 }
 
-func (ds *datastore) Users() store.UserStore {
+func (ds *Datastore) Users() store.UserStore {
 	return newUsers(ds)
 }
-func (ds *datastore) Roles() store.RoleStore {
-	return newRoles(ds)
+func (ds *Datastore) Roles() store.RoleStore {
+	return NewRoles(ds)
 }
-
-func (ds *datastore) Close() error {
-	db := ds.db
+func (ds *Datastore) Policies() store.PolicyStore {
+	return NewPolicies(ds)
+}
+func (ds *Datastore) Close() error {
+	db := ds.Db
 	return db.Close()
 }
 
@@ -45,7 +47,7 @@ func GetMySQLFactoryOr(cfg *settings.MySQLConfig) (store.Factory, error) {
 		dbIns, err = sqlx.Connect("mysql", dsn)
 	})
 
-	mysqlFactory = &datastore{dbIns}
+	mysqlFactory = &Datastore{dbIns}
 
 	if mysqlFactory == nil || err != nil {
 		return nil, fmt.Errorf("failed to get mysql store fatory, mysqlFactory: %+v, error: %w", mysqlFactory, err)

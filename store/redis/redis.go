@@ -7,17 +7,15 @@ import (
 	"github.com/go-redis/redis"
 )
 
-var (
-	client *redis.Client
-	Nil    = redis.Nil
-)
+var RdbClient *Rdb
 
-type SliceCmd = redis.SliceCmd
-type StringStringMapCmd = redis.StringStringMapCmd
+type Rdb struct {
+	Client *redis.Client
+}
 
 // Init 初始化连接
 func Init(cfg *settings.RedisConfig) (err error) {
-	client = redis.NewClient(&redis.Options{
+	c := redis.NewClient(&redis.Options{
 		Addr:         fmt.Sprintf("%s:%d", cfg.Host, cfg.Port),
 		Password:     cfg.Password, // no password set
 		DB:           cfg.DB,       // use default DB
@@ -25,13 +23,14 @@ func Init(cfg *settings.RedisConfig) (err error) {
 		MinIdleConns: cfg.MinIdleConns,
 	})
 
-	_, err = client.Ping().Result()
+	_, err = c.Ping().Result()
 	if err != nil {
 		return err
 	}
+	RdbClient = &Rdb{Client: c}
 	return nil
 }
 
 func Close() {
-	_ = client.Close()
+	_ = RdbClient.Client.Close()
 }

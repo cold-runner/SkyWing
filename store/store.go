@@ -6,10 +6,6 @@ var client Factory
 type Factory interface {
 	Users() UserStore
 	Roles() RoleStore
+	Policies() PolicyStore
 	Close() error
-}
-
-// Client return the store client instance.
-func Client() Factory {
-	return client
 }

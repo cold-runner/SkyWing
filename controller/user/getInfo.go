@@ -2,24 +2,29 @@ package user
 
 import (
 	"Skywing/models/response"
-	"fmt"
+	"Skywing/store/redis"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-	"io/ioutil"
 )
 
 func (u *UserController) GetInfo(c *gin.Context) {
-	get, err := u.Srv.Users().Get(c.Query("stuNum"))
-	if err != nil {
-		zap.L().Error("查询信息失败", zap.Error(err))
+	// 图片验证码校验
+	capId := c.GetString("captchaID")
+	capVal := c.GetString("captchaCode")
+	if capId == "" || capVal == "" {
+		response.ResponseError(c, response.CodeCaptchaFailed)
 		return
 	}
-	// 处理照片
-
-	path := fmt.Sprintf("photo/%s.jpg", get.StuName)
-	photoFile, err := ioutil.ReadFile(path)
+	if success := redis.RdbClient.Verify(capId, capVal, true); !success {
+		response.ResponseError(c, response.CodeCaptchaFailed)
+		return
+	}
+	// 查询信息
+	get, err := u.Srv.Users().Get(c.Param("uuid"))
 	if err != nil {
-		zap.L().Error("读取照片文件失败, ", zap.Error(err))
+		zap.L().Error("查询信息失败", zap.Error(err))
+		response.ResponseError(c, response.CodeUserNotExist)
+		return
 	}
 	response.ResponseSuccess(c, gin.H{
 		"stuNum":    get.StuNum,
@@ -30,6 +35,6 @@ func (u *UserController) GetInfo(c *gin.Context) {
 		"introduce": get.Introduce,
 		"major":     get.Major,
 		"province":  get.Province,
-		"photo":     photoFile,
+		"photo":     get.Photo,
 	})
 }

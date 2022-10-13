@@ -5,15 +5,16 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type roles struct {
+type Roles struct {
 	db *sqlx.DB
 }
 
-func newRoles(ds *datastore) *roles {
-	return &roles{ds.db}
+func NewRoles(ds *Datastore) *Roles {
+	return &Roles{ds.Db}
 }
 
-func (r *roles) Create(character *models.RoleCharacter) error {
+// Create创建
+func (r *Roles) Create(character *models.RoleCharacter) error {
 	sqlStr := "insert into role_character(uuid, role) values (?, ?)"
 	_, err := r.db.Exec(sqlStr, character.Uuid, character.Role)
 	if err != nil {
@@ -21,7 +22,7 @@ func (r *roles) Create(character *models.RoleCharacter) error {
 	}
 	return nil
 }
-func (r *roles) Get(uuid uint64) (*models.RoleCharacter, error) {
+func (r *Roles) Get(uuid uint64) (*models.RoleCharacter, error) {
 	sqlStr := "select * from role_character where uuid = ?"
 	rc := &models.RoleCharacter{}
 	err := r.db.Get(rc, sqlStr, uuid)

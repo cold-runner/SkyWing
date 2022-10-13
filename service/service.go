@@ -4,22 +4,30 @@ import (
 	"Skywing/store"
 )
 
-// Service defines functions used to return resource interface.
-type Service interface {
+// ServiceFunc defines functions used to return resource interface.
+type ServiceFunc interface {
 	Users() UserSrv
+	Policies() PolicySrv
+	Roles() RoleSrv
 }
 
-type service struct {
-	store store.Factory
+type Service struct {
+	Store store.Factory
 }
 
 // NewService returns Service interface.
-func NewService(store store.Factory) Service {
-	return &service{
-		store: store,
+func NewService(store store.Factory) ServiceFunc {
+	return &Service{
+		Store: store,
 	}
 }
 
-func (s *service) Users() UserSrv {
+func (s *Service) Users() UserSrv {
 	return newUsers(s)
+}
+func (s *Service) Policies() PolicySrv {
+	return newPolicies(s)
+}
+func (s *Service) Roles() RoleSrv {
+	return newRoles(s)
 }

@@ -17,6 +17,10 @@ const (
 	CodeUpdateFailed      MyCode = 1009
 	CodeCaptchaFailed     MyCode = 1010
 	CodePolicyFailed      MyCode = 1011
+	CodeInvalidPhoto      MyCode = 1012
+	CodeInvalidPhone      MyCode = 1013
+	CodeServerError       MyCode = 1014
+	CodeInvalidRandCode   MyCode = 1015
 )
 
 var msgFlags = map[MyCode]string{
@@ -34,6 +38,10 @@ var msgFlags = map[MyCode]string{
 	CodeUpdateFailed:      "修改用户信息失败",
 	CodeCaptchaFailed:     "验证码错误",
 	CodePolicyFailed:      "权限不足",
+	CodeInvalidPhoto:      "照片文件上传错误",
+	CodeInvalidPhone:      "无效的手机号码",
+	CodeServerError:       "服务器内部错误",
+	CodeInvalidRandCode:   "手机验证码不匹配",
 }
 
 func (c MyCode) Msg() string {

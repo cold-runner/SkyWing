@@ -1,84 +1,58 @@
 package jwt
 
 import (
-	"errors"
+	"Skywing/models"
+	"Skywing/settings"
+	"go.uber.org/zap"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	jwt "github.com/golang-jwt/jwt/v4"
 )
 
-// MyClaims 自定义声明结构体并内嵌jwt.StandardClaims
-// jwt包自带的jwt.StandardClaims只包含了官方字段
-// 我们这里需要额外记录一个UserID字段，所以要自定义结构体
-// 如果想要保存更多信息，都可以添加到这个结构体中
-type MyClaims struct {
-	UserID        uint64 `json:"user_id"`       // 唯一标识
-	AuthorityName string `json:"authorityName"` // 角色名
-	jwt.StandardClaims
-}
-
-var mySecret = []byte("sky2022Wel@02@")
-
 func keyFunc(_ *jwt.Token) (i interface{}, err error) {
-	return mySecret, nil
+	return []byte(settings.Conf.JwtConf.SigningKey), nil
 }
 
-const TokenExpireDuration = time.Hour * 24
-
-// GenToken 生成access token 和 refresh token
-func GenToken(userID uint64, roleName string) (aToken, rToken string, err error) {
-	// 创建一个我们自己的声明
-	c := MyClaims{
-		UserID:        userID,   // 唯一标识
-		AuthorityName: roleName, // 角色名
-
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(TokenExpireDuration).Unix(), // 过期时间
-			Issuer:    "sKyLab",                                   // 签发人
+// GenaToken 生成Token
+func GenToken(custom *models.CustomClaims) (token string, err error) {
+	// 创建自定义声明
+	claim := models.CustomClaims{
+		BaseClaims: models.BaseClaims{Uuid: custom.Uuid, StuNum: custom.StuNum},
+		StandardClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * settings.Conf.JwtConf.ExpiresTime)),
+			Issuer:    settings.Conf.JwtConf.Issuer,
 		},
+		// 指定缓存时间
+		BufferTime: time.Now().Add(time.Minute * settings.Conf.JwtConf.BufferTime).Unix(),
 	}
-	// 加密并获得完整的编码后的字符串token
-	aToken, err = jwt.NewWithClaims(jwt.SigningMethodHS256, c).SignedString(mySecret)
-
-	// refresh token 不需要存任何自定义数据
-	rToken, err = jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-		ExpiresAt: time.Now().Add(time.Second * 30).Unix(), // 过期时间
-		Issuer:    "sKyLab",                                // 签发人
-	}).SignedString(mySecret)
-	// 使用指定的secret签名并获得完整的编码后的字符串token
+	// 加密并获得完整的编码后的字符串token，其中密钥类型必须是[]byte
+	secretKey := settings.Conf.JwtConf.SigningKey
+	token, err = jwt.NewWithClaims(jwt.SigningMethodHS256, &claim).SignedString([]byte(secretKey))
 	return
 }
 
 // ParseToken 解析JWT
-func ParseToken(tokenString string) (claims *MyClaims, err error) {
-	// 解析token
-	var token *jwt.Token
-	claims = new(MyClaims)
-	token, err = jwt.ParseWithClaims(tokenString, claims, keyFunc)
+func ParseToken(tokenString string) (*models.CustomClaims, error) {
+	claims := new(models.CustomClaims)
+	_, err := jwt.ParseWithClaims(tokenString, claims, keyFunc)
 	if err != nil {
-		return
+		zap.L().Error("token解析失败", zap.Error(err))
+		return nil, err
 	}
-	if !token.Valid { // 校验token
-		err = errors.New("invalid token")
+	// 校验token有效性
+	if err := claims.Valid(); err != nil {
+		zap.L().Info("token已失效", zap.Error(err))
+		return nil, err
 	}
-	return
+	return claims, nil
 }
 
-// RefreshToken 刷新AccessToken
-//func RefreshToken(aToken, rToken string) (newAToken, newRToken string, err error) {
-//	// refresh token无效直接返回
-//	if _, err = jwt.Parse(rToken, keyFunc); err != nil {
-//		return
-//	}
-//
-//	// 从旧access token中解析出claims数据
-//	var claims MyClaims
-//	_, err = jwt.ParseWithClaims(aToken, &claims, keyFunc)
-//	v, _ := err.(*jwt.ValidationError)
-//
-//	// 当access token是过期错误 并且 refresh token没有过期时就创建一个新的access token
-//	if v.Errors == jwt.ValidationErrorExpired {
-//		return GenToken(claims.UserID)
-//	}
-//	return
+// CreateTokenByOldToken 旧token 换新token 使用归并回源避免并发问题
+//func CreateTokenByOldToken(oldToken string, claims *models.CustomClaims) (string, error) {
+//	concurrencyControl := &singleflight.Group{}
+//	v, err, _ := concurrencyControl.Do("JWT:"+oldToken,
+//		func() (interface{}, error) {
+//			return GenToken(claims)
+//		})
+//	return v.(string), err
 //}

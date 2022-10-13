@@ -6,10 +6,12 @@ import (
 
 // UserStore defines the user storage interface.
 type UserStore interface {
-	Create(user *models.User) error
-	Update(user *models.User) error
-	Delete(stuNum string) error
-	DeleteCollection(stuNum []string) error
-	Get(stuNum string) (*models.User, error)
+	Create(*models.User) error
+	Update(*models.User) error
+	Delete(string) error
+	DeleteCollection([]string) error
+	GetByStuNum(string) (*models.User, error)
+	GetByUuid(string) (*models.User, error)
+	GetCount() (int, error)
 	List() ([]models.User, error)
 }

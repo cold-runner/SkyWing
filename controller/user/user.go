@@ -7,7 +7,7 @@ import (
 
 // UserController create a user handler used to handle request for user resource.
 type UserController struct {
-	Srv service.Service
+	Srv service.ServiceFunc
 }
 
 // NewUserController creates a user handler.

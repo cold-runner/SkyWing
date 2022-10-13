@@ -2,74 +2,62 @@ package service
 
 import (
 	"Skywing/models"
+	"Skywing/models/response"
 	"Skywing/pkg/jwt"
+	"Skywing/pkg/oss"
 	snow "Skywing/pkg/snowflake"
 	"Skywing/store"
-	"encoding/base64"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-	"io/ioutil"
+	"strconv"
 	"time"
 )
 
 // UserSrv defines functions used to handle user request.
 type UserSrv interface {
-	Create(c *gin.Context, user *models.RegisterForm) error
-	Update(user *models.User) error
+	Create(*gin.Context, *models.RegisterForm) (*models.GenCreateInfo, error)
+	Update(string, *models.UpdateForm) error
 	Delete(stuNum string) error
 	DeleteCollection(stuNum []string) error
 	Get(stuNum string) (*models.User, error)
+	GetCount() (int, error)
 	List() ([]models.User, error)
-
 	Login(ctx *gin.Context, loginUser *models.LoginUser) (*models.LoginedUser, error)
 	//ChangePassword() error
 }
-
-type userService struct {
+type UserService struct {
 	store store.Factory
 }
 
-var _ UserSrv = (*userService)(nil)
+var _ UserSrv = (*UserService)(nil)
 
-func newUsers(srv *service) *userService {
-	return &userService{store: srv.store}
+func newUsers(srv *Service) *UserService {
+	return &UserService{store: srv.Store}
 }
-
-// List returns user list in the storage. This function has a good performance.
-func (u *userService) List() ([]models.User, error) {
-	return u.store.Users().List()
-}
-
-func (u *userService) Create(c *gin.Context, passUser *models.RegisterForm) error {
-	res, _ := u.store.Users().Get(passUser.StuNum)
+func (u *UserService) Create(c *gin.Context, passUser *models.RegisterForm) (*models.GenCreateInfo, error) {
+	res, _ := u.store.Users().GetByStuNum(passUser.StuNum)
 	if res.StuNum == passUser.StuNum {
-		return fmt.Errorf("用户已存在")
+		return nil, fmt.Errorf("用户已存在")
 	}
-
-	// 生成加密密码
-	enPassword := encryptPassword([]byte(passUser.Password))
-	passUser.Password = enPassword
-
-	// 将照片解码成图片，并将路径存储
-	ddd, err := base64.StdEncoding.DecodeString(passUser.Photo)
-	if err != nil {
-		zap.L().Error("图片转base64失败, ", zap.Error(err))
-	}
-	path := fmt.Sprintf("photo/%s.jpg", passUser.StuName)
-	if err := ioutil.WriteFile(path, ddd, 0666); err != nil {
-		zap.L().Error("照片写入失败, ", zap.Error(err))
-	}
-	passUser.Photo = path
-
+	// 生成uuid
 	snowId, err := snow.GetID()
 	if err != nil {
-		// id随机生成失败
+		zap.L().Error("UUID生成失败", zap.Error(err))
 	}
+	// 生成加密密码
+	passUser.Password = models.EyPasswd(passUser.Password)
+
+	// 照片上传至oss
+	_, fileHeader, err := c.Request.FormFile("photo")
+	photoUrl, err := oss.UploadToQiNiu(fileHeader, strconv.FormatUint(snowId, 10))
+	if err != nil {
+		response.ResponseError(c, response.CodeInvalidPhoto)
+	}
+	// user表中插入数据
 	user := &models.User{
 		UserID:     snowId,
 		CreateTime: time.Now(),
-		UpdateTime: time.Now(),
 		StuNum:     passUser.StuNum,
 		StuName:    passUser.StuName,
 		StuGender:  passUser.StuGender,
@@ -77,53 +65,44 @@ func (u *userService) Create(c *gin.Context, passUser *models.RegisterForm) erro
 		Qq:         passUser.Qq,
 		Mobile:     passUser.Mobile,
 		Province:   passUser.Province,
-		Photo:      passUser.Photo,
+		Photo:      photoUrl,
 		Introduce:  passUser.Introduce,
 		Password:   passUser.Password,
 	}
-	// 数据库插入数据
-	if err := u.store.Users().Create(user); err != nil {
-		return err
+	if err = u.store.Users().Create(user); err != nil {
+		return nil, err
 	}
-
-	// 将萌新角色赋值给报名者
-	rc := &models.RoleCharacter{
-		Uuid: snowId,
-		Role: "newcomer",
+	// 生成带有uuid和stuNum的业务结构体
+	mic := &models.GenCreateInfo{
+		Uuid:   snowId,
+		StuNum: passUser.StuNum,
 	}
-	if err := u.store.Roles().Create(rc); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (u *userService) DeleteCollection(stuNum []string) error {
-	if err := u.store.Users().DeleteCollection(stuNum); err != nil {
-		// 返回数据库内部错误的相应码
-	}
-
-	return nil
-}
-
-func (u *userService) Delete(stuNum string) error {
-	if err := u.store.Users().Delete(stuNum); err != nil {
-		// 返回数据库内部错误的相应码
-	}
-	return nil
-}
-
-func (u *userService) Get(stuNum string) (*models.User, error) {
-	user, err := u.store.Users().Get(stuNum)
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+	return mic, nil
 }
 
-func (u *userService) Update(user *models.User) error {
+func (u *UserService) Update(uuid string, user *models.UpdateForm) error {
+	// 获取uuid
+	existInfo, err := u.store.Users().GetByUuid(uuid)
+	if err != nil {
+		zap.L().Error("不存在的用户", zap.Error(err))
+	}
+	// 删除原来照片
+	processKey := fmt.Sprintf("userPhoto/%s.jpg", uuid)
+	if err = oss.DeleteFileFromQiniu(processKey); err != nil {
+		zap.L().Error("删除照片失败！", zap.Error(err))
+		return err
+	}
+	// 新的照片
+	photoUrl, err := oss.UploadToQiNiu(user.Photo, strconv.FormatUint(existInfo.UserID, 10))
+	if err != nil {
+		zap.L().Error("更新照片失败！", zap.Error(err))
+		return err
+	}
 	newInfo := &models.User{
-		UserID:     user.UserID,
+		UserID:     existInfo.UserID,
 		UpdateTime: time.Now(),
 		StuNum:     user.StuNum,
 		StuName:    user.StuName,
@@ -132,73 +111,86 @@ func (u *userService) Update(user *models.User) error {
 		Qq:         user.Qq,
 		Mobile:     user.Mobile,
 		Province:   user.Province,
-		Photo:      user.Photo,
+		Photo:      photoUrl,
 		Introduce:  user.Introduce,
 	}
-	// 将照片解码成图片
-	ddd, err := base64.StdEncoding.DecodeString(user.Photo)
-	if err != nil {
-		zap.L().Error("图片转base64失败, ", zap.Error(err))
-	}
-	path := fmt.Sprintf("photo/%s.jpg", newInfo.StuName)
-	if err := ioutil.WriteFile(path, ddd, 0666); err != nil {
-		zap.L().Error("照片写入失败, ", zap.Error(err))
-	}
-	newInfo.Photo = path
-	if err := u.store.Users().Update(newInfo); err != nil {
+
+	if err = u.store.Users().Update(newInfo); err != nil {
 		zap.L().Error("更新数据失败", zap.Error(err))
 		return err
 	}
 	return nil
 }
-func (u *userService) Login(c *gin.Context, loginUser *models.LoginUser) (userInfo *models.LoginedUser, err error) {
+func (u *UserService) GetCount() (int, error) {
+	count, err := u.store.Users().GetCount()
+	if err != nil {
+		return -1, err
+	}
+	return count, nil
+}
+func (u *UserService) Delete(stuNum string) error {
+	if err := u.store.Users().Delete(stuNum); err != nil {
+		// 返回数据库内部错误的相应码
+	}
+	return nil
+}
+func (u *UserService) DeleteCollection(stuNum []string) error {
+	if err := u.store.Users().DeleteCollection(stuNum); err != nil {
+		// 返回数据库内部错误的相应码
+	}
+
+	return nil
+}
+func (u *UserService) Get(uuid string) (*models.User, error) {
+	user, err := u.store.Users().GetByUuid(uuid)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+// List returns user list in the storage. This function has a good performance.
+func (u *UserService) List() ([]models.User, error) {
+	return u.store.Users().List()
+}
+func (u *UserService) Login(c *gin.Context, lUser *models.LoginUser) (userInfo *models.LoginedUser, err error) {
 	// 在数据库中查询是否存在用户
-	get, err := u.store.Users().Get(loginUser.StuNum)
+	get, err := u.store.Users().GetByStuNum(lUser.StuNum)
 	if err != nil {
 		return nil, fmt.Errorf("用户不存在")
 	}
 	// 用户登录密码和数据库密码进行匹配
-	enPassword := encryptPassword([]byte(loginUser.Password))
+	enPassword := models.EyPasswd(lUser.Password)
 	if enPassword != get.Password {
 		return nil, fmt.Errorf("密码错误")
 	}
-	// 登录成功根据uuid和角色信息颁发token
-	role, err := u.store.Roles().Get(get.UserID)
+	// 登录成功根据uuid和角色信息颁发accessToken
+	aToken, err := jwt.GenToken(&models.CustomClaims{
+		BaseClaims: models.BaseClaims{
+			Uuid:   get.UserID,
+			StuNum: get.StuNum,
+		},
+	})
 	if err != nil {
-		zap.L().Error("查询角色信息失败", zap.Error(err))
-		return nil, err
+		zap.L().Error("token生成失败！", zap.Error(err))
 	}
-	accessToken, refreshToken, err := jwt.GenToken(get.UserID, role.Role)
-	if err != nil {
-		zap.L().Error("token生成失败", zap.Error(err))
-		return nil, err
+	loginUser := &models.LoginedUser{
+		StuNum:    get.StuNum,
+		StuName:   get.StuName,
+		StuGender: get.StuGender,
+		Major:     get.Major,
+		Qq:        get.Qq,
+		Mobile:    get.Mobile,
+		Province:  get.Province,
+		Introduce: get.Introduce,
+		Atoken:    aToken,
+		Photo:     get.Photo,
 	}
-	// 根据数据库中存储的照片路径找到照片，并编码为base64
-	path := fmt.Sprintf("photo/%s.jpg", get.StuName)
-	photoFile, err := ioutil.ReadFile(path)
-	if err != nil {
-		zap.L().Error("读取照片文件失败, ", zap.Error(err))
-	}
-	ddd := base64.StdEncoding.EncodeToString([]byte(photoFile))
-
-	loginedUser := &models.LoginedUser{
-		StuNum:       get.StuNum,
-		StuName:      get.StuName,
-		StuGender:    get.StuGender,
-		Major:        get.Major,
-		Qq:           get.Qq,
-		Mobile:       get.Mobile,
-		Province:     get.Province,
-		Introduce:    get.Introduce,
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-		Photo:        ddd,
-	}
-	return loginedUser, nil
+	return loginUser, nil
 }
 
 //
-//func (u *userService) ChangePassword(ctx context.Context, user *v1.User) error {
+//func (u *UserService) ChangePassword(ctx context.Context, user *v1.User) error {
 //	// Save changed fields.
 //	if err := u.store.Users().Update(ctx, user, metav1.UpdateOptions{}); err != nil {
 //		return errors.WithCode(code.ErrDatabase, err.Error())
