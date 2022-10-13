@@ -9,16 +9,37 @@ log:
   max_backups: 5
 
 mysql:
-  host: rm-bp1g6r2lq2b4kb779so.mysql.rds.aliyuncs.com
-  port: 3306
-  user: zzzheng
-  password: skys!1004
-  db: skywing
-  max_open_conns: 100
-  max_idle_conns: 20
+  host:
+  port: 
+  user:
+  password:
+  db:
+  max_open_conns:
+  max_idle_conns:
 
 redis:
-  host: r-bp1kljor4s77o7q51bpd.redis.rds.aliyuncs.com
-  port: 6379
-  password: zzzheng:skysB!01
-  db: 0
+  host:
+  port:
+  password:
+  db:
+
+secret:
+
+qiniu:
+  zone:
+  bucket:
+  img-path:
+  use-https:
+  use-cdn-domains:
+  access-key:
+  secret-key: 
+aliyunMsg:
+
+  access-key-ID:
+  access-key-secret:
+
+jwt:
+  expiresTimeDurationMinutes:
+  bufferTimeDurationMinutes:
+  signing-key:
+  issuer :
