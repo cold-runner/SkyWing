@@ -11,8 +11,8 @@ import (
 
 func (u *UserController) Update(c *gin.Context) {
 	// 图片验证码校验
-	capId := c.GetString("captchaID")
-	capVal := c.GetString("captchaCode")
+	capId := c.PostForm("captchaID")
+	capVal := c.PostForm("captchaCode")
 	if capId == "" || capVal == "" {
 		response.ResponseError(c, response.CodeCaptchaFailed)
 		return
@@ -23,13 +23,6 @@ func (u *UserController) Update(c *gin.Context) {
 	}
 	// 获取请求参数
 	updateObj := models.UpdateForm{
-		StuNum:    c.PostForm("stuNum"),
-		StuName:   c.PostForm("stuName"),
-		StuGender: c.PostForm("stuGender"),
-		Major:     c.PostForm("major"),
-		Qq:        c.PostForm("qq"),
-		Mobile:    c.PostForm("mobile"),
-		Province:  c.PostForm("province"),
 		Introduce: c.PostForm("introduce"),
 	}
 	// 参数校验

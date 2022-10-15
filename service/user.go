@@ -23,7 +23,7 @@ type UserSrv interface {
 	Get(stuNum string) (*models.User, error)
 	GetCount() (int, error)
 	List() ([]models.User, error)
-	Login(ctx *gin.Context, loginUser *models.LoginUser) (*models.LoginedUser, error)
+	Login(loginUser *models.LoginUser) (*models.LoginedUser, error)
 	//ChangePassword() error
 }
 type UserService struct {
@@ -92,8 +92,7 @@ func (u *UserService) Update(uuid string, user *models.UpdateForm) error {
 	// 删除原来照片
 	processKey := fmt.Sprintf("userPhoto/%s.jpg", uuid)
 	if err = oss.DeleteFileFromQiniu(processKey); err != nil {
-		zap.L().Error("删除照片失败！", zap.Error(err))
-		return err
+		zap.L().Error("删除照片失败！照片可能已经被删除", zap.Error(err))
 	}
 	// 新的照片
 	photoUrl, err := oss.UploadToQiNiu(user.Photo, strconv.FormatUint(existInfo.UserID, 10))
@@ -104,13 +103,6 @@ func (u *UserService) Update(uuid string, user *models.UpdateForm) error {
 	newInfo := &models.User{
 		UserID:     existInfo.UserID,
 		UpdateTime: time.Now(),
-		StuNum:     user.StuNum,
-		StuName:    user.StuName,
-		StuGender:  user.StuGender,
-		Major:      user.Major,
-		Qq:         user.Qq,
-		Mobile:     user.Mobile,
-		Province:   user.Province,
 		Photo:      photoUrl,
 		Introduce:  user.Introduce,
 	}
@@ -124,6 +116,7 @@ func (u *UserService) Update(uuid string, user *models.UpdateForm) error {
 func (u *UserService) GetCount() (int, error) {
 	count, err := u.store.Users().GetCount()
 	if err != nil {
+		zap.L().Error("查询报名人数错误", zap.Error(err))
 		return -1, err
 	}
 	return count, nil
@@ -153,7 +146,7 @@ func (u *UserService) Get(uuid string) (*models.User, error) {
 func (u *UserService) List() ([]models.User, error) {
 	return u.store.Users().List()
 }
-func (u *UserService) Login(c *gin.Context, lUser *models.LoginUser) (userInfo *models.LoginedUser, err error) {
+func (u *UserService) Login(lUser *models.LoginUser) (userInfo *models.LoginedUser, err error) {
 	// 在数据库中查询是否存在用户
 	get, err := u.store.Users().GetByStuNum(lUser.StuNum)
 	if err != nil {

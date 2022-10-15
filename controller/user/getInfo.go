@@ -2,23 +2,22 @@ package user
 
 import (
 	"Skywing/models/response"
-	"Skywing/store/redis"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
 
 func (u *UserController) GetInfo(c *gin.Context) {
 	// 图片验证码校验
-	capId := c.GetString("captchaID")
-	capVal := c.GetString("captchaCode")
-	if capId == "" || capVal == "" {
-		response.ResponseError(c, response.CodeCaptchaFailed)
-		return
-	}
-	if success := redis.RdbClient.Verify(capId, capVal, true); !success {
-		response.ResponseError(c, response.CodeCaptchaFailed)
-		return
-	}
+	//capId := c.PostForm("captchaID")
+	//capVal := c.PostForm("captchaCode")
+	//if capId == "" || capVal == "" {
+	//	response.ResponseError(c, response.CodeCaptchaFailed)
+	//	return
+	//}
+	//if success := redis.RdbClient.Verify(capId, capVal, true); !success {
+	//	response.ResponseError(c, response.CodeCaptchaFailed)
+	//	return
+	//}
 	// 查询信息
 	get, err := u.Srv.Users().Get(c.Param("uuid"))
 	if err != nil {

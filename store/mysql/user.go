@@ -36,7 +36,7 @@ func (u *Users) Create(reg *models.User) error {
 func (u *Users) GetCount() (int, error) {
 	var count int
 	sqlStr := "select count(stu_num) from user"
-	if err := u.db.Get(count, sqlStr, nil); err != nil {
+	if err := u.db.Get(&count, sqlStr); err != nil {
 		return -1, err
 	}
 	return count, nil
@@ -66,16 +66,10 @@ func (u *Users) List() ([]models.User, error) {
 
 // Update updates a user account information.
 func (u *Users) Update(user *models.User) error {
-	sqlStr := "update user set stu_num = :stuNum, stu_name = :stuName, stu_gender = :stuGender, major = :major, qq = :qq, mobile = :mobile, province = :province, photo = :photo, introduce = :introduce, update_time= :updateTime"
+	sqlStr := "update user set photo = :photo, introduce = :introduce, update_time= :updateTime where user_id = :uuid"
 	_, err := u.db.NamedExec(sqlStr, map[string]interface{}{
 		"updateTime": time.Now(),
-		"stuNum":     user.StuNum,
-		"stuName":    user.StuName,
-		"stuGender":  user.StuGender,
-		"major":      user.Major,
-		"qq":         user.Qq,
-		"mobile":     user.Mobile,
-		"province":   user.Province,
+		"uuid":       user.UserID,
 		"photo":      user.Photo,
 		"introduce":  user.Introduce,
 	})
@@ -83,14 +77,14 @@ func (u *Users) Update(user *models.User) error {
 }
 
 // Delete deletes the user by the user identifier.
-func (u *Users) Delete(stuNum string) error {
+func (u *Users) Delete(string) error {
 	// delete related policy first
 
 	return nil
 }
 
 // DeleteCollection batch deletes the user.
-func (u *Users) DeleteCollection(stuNum []string) error {
+func (u *Users) DeleteCollection([]string) error {
 	// delete related policy first
 	return nil
 }

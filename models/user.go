@@ -45,13 +45,13 @@ type RegisterForm struct {
 	//SmsCode         string `json:"smsCode" validate:"len=4,alphanum"`
 }
 type UpdateForm struct {
-	StuNum    string                `json:"stuNum" validate:"valStuNum"`
-	StuName   string                `json:"stuName" validate:"valStuName"`
-	StuGender string                `json:"stuGender" validate:"valStuGender"`
-	Major     string                `json:"major" validate:"valStuMajor"`
-	Qq        string                `json:"qq" validate:"valStuQq"`
-	Mobile    string                `json:"mobile" validate:"valStuMobile"`
-	Province  string                `json:"province" validate:"valStuProvince"`
+	//StuNum    string                `json:"stuNum" validate:"valStuNum"`
+	//StuName   string                `json:"stuName" validate:"valStuName"`
+	//StuGender string                `json:"stuGender" validate:"valStuGender"`
+	//Major     string                `json:"major" validate:"valStuMajor"`
+	//Qq        string                `json:"qq" validate:"valStuQq"`
+	//Mobile    string                `json:"mobile" validate:"valStuMobile"`
+	//Province  string                `json:"province" validate:"valStuProvince"`
 	Introduce string                `json:"introduce" validate:"valStuIntroduce"`
 	Photo     *multipart.FileHeader `json:"photo"`
 	*request.Captcha

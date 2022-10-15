@@ -37,6 +37,7 @@ func (u *UserController) GetCount(c *gin.Context) {
 	count, err := u.Srv.Users().GetCount()
 	if err != nil {
 		response.ResponseError(c, response.CodeServerError)
+		return
 	}
 	response.ResponseSuccess(c, gin.H{"count": count})
 }

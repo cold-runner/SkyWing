@@ -26,7 +26,7 @@ func SetupRouter() *gin.Engine {
 	{
 		r.MaxMultipartMemory = 8 << 20 // 8 MiB
 		userController := user.NewUserController(storeIns)
-		v1.GET("ApplicantCount", userController.GetCount)
+		v1.GET("/ApplicantCount", userController.GetCount)
 		v1.GET("/captcha", captcha.Captcha)
 		//v1.GET("/sendSmsCode", userController.SendSmsCode)
 		v1.POST("/signUp", userController.Create)
