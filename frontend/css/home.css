@@ -1,0 +1,199 @@
+body {
+	overflow: visible;
+}
+
+.container {
+	width: 1200px;
+	margin: 0 auto;
+	overflow: visible;
+	position: relative;
+	box-sizing: border-box;
+}
+p {
+	font-size: 22px;
+	line-height: 40px;
+	text-indent: 2em;
+}
+/* box1 */
+.box1 {
+	width: 1110px;
+	display: flex;
+	justify-content: space-between;
+	margin: 104px auto 100px;
+}
+.box1 .right {
+	width: 336px;
+	border-radius: 40px;
+	overflow: hidden;
+	box-shadow: 1px 1px 20px #bababa;
+}
+
+.box1 .left {
+	width: 747px;
+	height: 100%;
+	padding-bottom: 20px;
+	border-radius: 40px;
+	background-color: #fff;
+	box-shadow: 1px 1px 20px #bababa;
+}
+.box1 .little-star img {
+	transform: rotate(-10deg);
+	float: left;
+	width: 30%;
+}
+.box1 .left h1 {
+	text-align: center;
+	padding: 15px;
+	font-size: 30px;
+}
+
+.box1 .left p {
+	font-size: 22px;
+	line-height: 40px;
+	padding: 0 60px;
+	text-indent: 2em;
+}
+
+/* box2 */
+
+.box2 {
+	height: 1132px;
+	width: 890px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	margin-left: 262px;
+	margin-top: 150px;
+}
+.box2 .top {
+	z-index: 1;
+	height: 518px;
+	width: 100%;
+	border-radius: 40px;
+	background-color: #fff;
+	overflow: hidden;
+}
+
+.box2 .bottom {
+	display: flex;
+	justify-content: space-between;
+	overflow: visible;
+}
+
+.box2 .bottom .right {
+	padding-top: 40px;
+	width: 460px;
+	height: 100%;
+}
+
+.box2 .bottom .left p {
+	font-size: 22px;
+	line-height: 40px;
+	padding: 0 50px;
+	text-indent: 2em;
+}
+.box2 .bottom h1 {
+	margin-bottom: 20px;
+}
+.box2 .bottom .right div {
+	float: left;
+	width: 200px;
+	height: 200px;
+	margin-left: 25px;
+	margin-bottom: 25px;
+	overflow: hidden;
+	border-radius: 40px;
+}
+
+/* box3 */
+
+.box3 {
+	position: absolute;
+	top: 630px;
+	margin-left: 48px;
+	margin-top: 100px;
+	height: 1132px;
+	width: 125px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+.box3 .yellow-bar {
+	height: 937px;
+	border-radius: 40px;
+	background-color: #f6c431;
+}
+.box3 .bottom {
+	height: 125px;
+	width: 125px;
+	border-radius: 40px;
+	background-color: #fff;
+}
+
+/* box4 */
+.box4 {
+	width: 1075px;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	margin: 150px auto 0px;
+}
+.frontend,
+.backend,
+.ui {
+	display: flex;
+	width: 100%;
+	margin-bottom: 150px;
+}
+.tech-logo {
+	width: 600px;
+	height: 400px;
+}
+.tech-logo div {
+	width: 200px;
+	height: 200px;
+	float: left;
+	transition: all 0.4s;
+}
+.study-card {
+	position: relative;
+	width: 400px;
+	border-radius: 40px;
+	padding: 50px;
+	box-shadow: 1px 1px 20px #bababa;
+	transition: all 0.3s;
+}
+.star-0 {
+	width: 244px;
+	height: 244px;
+	position: absolute;
+	top: -140px;
+	right: -100px;
+	transform: rotateZ(270deg);
+}
+/* ui设计 */
+.ui-pic {
+	position: relative;
+	width: 675px;
+	height: 800px;
+}
+.ui-pic div {
+	position: absolute;
+	width: 600px;
+	height: 400px;
+}
+.big-star {
+	width: 630px;
+	height: 630px;
+	position: absolute;
+	top: 480px;
+	left: -111px;
+	transform: rotateZ(-20deg);
+	z-index: 1;
+}
+.study-card:hover {
+	box-shadow: 1px 1px 10px black;
+}
+.tech-logo div:hover {
+	transform: scale(1.2);
+}

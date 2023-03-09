@@ -1,0 +1,15 @@
+.footer {
+	margin: 100px auto 0px;
+	width: 1200px;
+	height: 60px;
+	text-align: center;
+}
+.footer span {
+	padding: 10px 2px;
+}
+.footer a {
+	transition: all 0.2s;
+}
+.footer a:hover {
+	color: skyblue;
+}

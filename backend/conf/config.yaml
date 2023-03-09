@@ -1,0 +1,45 @@
+mode: "dev"
+port: 8081
+
+log:
+  level: "debug"
+  filename: "./log/skywing.log"
+  max_size: 1000
+  max_age: 3600
+  max_backups: 5
+
+mysql:
+  host:
+  port: 
+  user:
+  password:
+  db:
+  max_open_conns:
+  max_idle_conns:
+
+redis:
+  host:
+  port:
+  password:
+  db:
+
+secret:
+
+qiniu:
+  zone:
+  bucket:
+  img-path:
+  use-https:
+  use-cdn-domains:
+  access-key:
+  secret-key: 
+aliyunMsg:
+
+  access-key-ID:
+  access-key-secret:
+
+jwt:
+  expiresTimeDurationMinutes:
+  bufferTimeDurationMinutes:
+  signing-key:
+  issuer :

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link
+			rel="apple-touch-icon"
+			sizes="180x180"
+			href="https://zzzheng.com/skyorg/img/favicon/apple-touch-icon.png" />
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="32x32"
+			href="https://zzzheng.com/skyorg/img/favicon/favicon-32x32.png" />
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="16x16"
+			href="https://zzzheng.com/skyorg/img/favicon/favicon-16x16.png" />
+		<link rel="manifest" href="https://zzzheng.com/skyorg/img/favicon/site.webmanifest" />
+		<link
+			rel="mask-icon"
+			href="https://zzzheng.com/skyorg/img/favicon/safari-pinned-tab.svg"
+			color="#5bbad5" />
+		<meta name="msapplication-TileColor" content="#da532c" />
+		<meta name="theme-color" content="#ffffff" />
+		<title>欢迎同学加入Skylab!</title>
+		<link rel="stylesheet" href="css/base/animation.css" />
+		<link rel="stylesheet" href="css/base/common.css" />
+		<link rel="stylesheet" href="css/base/head.css" />
+		<link rel="stylesheet" href="css/base/foot.css" />
+		<link rel="stylesheet" type="text/css" href=./css/signup.css ">
+		<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+	</head>
+
+	<body>
+		<div class="background">
+			<div class="container">
+				<div class="bgimg left-top">
+					<img src="https://zzzheng.com/skyorg/img/public/D3.png" alt="" />
+				</div>
+				<div class="bgimg right-top"></div>
+				<div class="bgimg left-bottom"></div>
+				<div class="bgimg right-bottom">
+					<img src="https://zzzheng.com/skyorg/img/public/D3.png" alt="" />
+				</div>
+				<div class="nav">
+					<div class="left-box">
+						<img src="https://zzzheng.com/skyorg/img/public/LOGO.png" alt="" />
+					</div>
+					<div class="right-box">
+						<div class="top-box">
+							<div class="nav-title left-line">
+								<a class="y" href="./success.html">成就</a>
+							</div>
+							<div class="nav-title left-line">
+								<a class="b" href="./member.html">成员</a>
+							</div>
+							<div class="nav-title left-line">
+								<a class="l" href="#">报名</a>
+							</div>
+							<div class="nav-title"><a class="r" href="./home.html">主页</a></div>
+						</div>
+						<div class="bottom-box">
+							<div>
+								WELCOM <span style="color: #fac830">TO</span><span>JONN</span>
+								<span>US</span> <span class="box"> </span>
+								<span class="twobox"></span>
+								<span class="box"> </span>
+							</div>
+						</div>
+					</div>
+					<div class="piece"></div>
+				</div>
+				<div class="form-container">
+					<form novalidate id="form">
+						<div class="blu form-content">
+							<div class="form-star0 star-0-ud">
+								<img src="https://zzzheng.com/skyorg/img/public/A4.png" alt="" />
+							</div>
+							<div class="form-star1 star-1-ud">
+								<img src="https://zzzheng.com/skyorg/img/public/A4.png" alt="" />
+							</div>
+							<div class="logo">
+								<img src="https://zzzheng.com/skyorg/img/public/LOGO.png" alt="" />
+							</div>
+							<h1 class="join-us">JOIN US</h1>
+							<!-- 表单 -->
+							<div class="basic-info">
+								<ul>
+									<li class="first-line">
+										<div class="bs-content">
+											<span>姓名</span>
+											<input
+												type="text"
+												name="stuName"
+												maxlength="10"
+												id="stuName" />
+											<div class="error" id="stuNameV" aria-live="polite">
+												请输入你的真实姓名！
+											</div>
+										</div>
+										<div class="bs-content" style="height: 35px">
+											<span>性别</span>
+											<select name="stuGender" id="stuGender">
+												<option value="">-</option>
+												<option value="男">男</option>
+												<option value="女">女</option>
+											</select>
+											<div class="error" id="stuGenderV" aria-live="polite">
+												请选择你的性别！
+											</div>
+										</div>
+									</li>
+									<li class="second-line">
+										<div class="bs-content">
+											<span>学号</span>
+											<input
+												type="text"
+												name="stuNum"
+												maxlength="8"
+												id="stuNum" />
+											<div class="error" id="stuNumV" aria-live="polite">
+												你所在的专业不属于我们纳新的范围！
+											</div>
+										</div>
+										<div class="bs-content">
+											<span>班级</span>
+											<select name="stuClass" id="stuClass">
+												<option value="-">-</option>
+												<option value="1">1</option>
+												<option value="2">2</option>
+												<option value="3">3</option>
+												<option value="4">4</option>
+												<option value="5">5</option>
+												<option value="6">6</option>
+												<option value="7">7</option>
+												<option value="11">11</option>
+												<option value="12">12</option>
+												<option value="13">13</option>
+												<option value="14">14</option>
+												<option value="15">15</option>
+												<option value="16">16</option>
+											</select>
+											<div class="error" id="stuClassV" aria-live="polite">
+												请选择你的班级！
+											</div>
+										</div>
+									</li>
+									<li class="second-line">
+										<div class="bs-content">
+											<span>出生日期</span>
+											<input type="date" name="stuBirth" id="stuBirth" />
+											<div class="error" id="stuBirthV" aria-live="polite">
+												请选择你的出生日期！
+											</div>
+										</div>
+										<div class="bs-content" style="height: 35px">
+											<span>家乡省份</span>
+											<select name="stuProvince" id="stuProvince">
+												<option value="">-</option>
+												<option value="浙江">浙江</option>
+												<option value="上海">上海</option>
+												<option value="北京">北京</option>
+												<option value="天津">天津</option>
+												<option value="重庆">重庆</option>
+												<option value="黑龙江">黑龙</option>
+												<option value="吉林">吉林</option>
+												<option value="辽宁">辽宁</option>
+												<option value="内蒙古">内蒙</option>
+												<option value="河北">河北</option>
+												<option value="新疆">新疆</option>
+												<option value="甘肃">甘肃</option>
+												<option value="青海">青海</option>
+												<option value="陕西">陕西</option>
+												<option value="宁夏">宁夏</option>
+												<option value="河南">河南</option>
+												<option value="山东">山东</option>
+												<option value="山西">山西</option>
+												<option value="安徽">安徽</option>
+												<option value="湖北">湖北</option>
+												<option value="湖南">湖南</option>
+												<option value="江苏">江苏</option>
+												<option value="四川">四川</option>
+												<option value="贵州">贵州</option>
+												<option value="云南">云南</option>
+												<option value="广西">广西</option>
+												<option value="西藏">西藏</option>
+												<option value="江西">江西</option>
+												<option value="广东">广东</option>
+												<option value="福建">福建</option>
+												<option value="台湾">台湾</option>
+												<option value="海南">海南</option>
+												<option value="香港">香港</option>
+												<option value="澳门">澳门</option>
+											</select>
+											<div class="error" id="stuProvinceV" aria-live="polite">
+												请选择你的家乡省份！
+											</div>
+										</div>
+									</li>
+									<li>
+										<div class="bs-content">
+											<span>QQ</span>
+											<input
+												type="text"
+												name="stuQq"
+												id="stuQq"
+												maxlength="12" />
+											<div class="error" id="stuQqV" aria-live="polite">
+												请输入你真实的QQ号码！
+											</div>
+										</div>
+										<div class="bs-content">
+											<span>专业</span>
+											<select name="stuMajor" id="stuMajor">
+												<option value="">-</option>
+												<option value="计科师范">
+													计算机科学与技术（师范）
+												</option>
+												<option value="网络工程">网络工程</option>
+												<option value="软件工程">软件工程</option>
+												<option value="计算机科学与技术">
+													计算机科学与技术
+												</option>
+											</select>
+											<div class="error" id="stuMajorV" aria-live="polite">
+												请选择你所属的专业！
+											</div>
+										</div>
+									</li>
+								</ul>
+								<div class="photo">
+									<div class="pu">
+										<input
+											style="cursor: pointer"
+											type="file"
+											name="stuPhoto"
+											id="stuPhoto"
+											accept=".jpg,.png" />
+										<img
+											id="preview"
+											style="
+												/* display: none; */
+												width: 100%;
+												height: 100%;
+												position: absolute;
+											" />
+										<p>请上传一张自拍照，格式为jpg或png，大小不要超过2MB</p>
+									</div>
+									<div class="error" aria-live="polite" id="photoV">
+										请上传大小不超过2M，格式为jpg或png的照片！
+									</div>
+								</div>
+							</div>
+
+							<div class="text-introduce">
+								<h3>计算机方面特长</h3>
+								<textarea
+									name="advantage"
+									id="stuAdvantage"
+									cols="30"
+									rows="10"
+									maxlength="400"
+									placeholder="让我们看到你的闪光点，录取的概率会增加哦！"></textarea>
+								<div class="error" aria-live="polite" id="advantageV">
+									请按照要求填写！
+								</div>
+							</div>
+
+							<div class="text-introduce">
+								<h3>进入SKY工作室的畅想</h3>
+								<textarea
+									name="imagine"
+									id="stuImagine"
+									cols="30"
+									rows="10"
+									maxlength="400"
+									placeholder="让我们看到你的闪光点，录取的概率会增加哦！"></textarea>
+								<div class="error" aria-live="polite" id="imagineV">
+									请按照要求填写！
+								</div>
+							</div>
+							<div class="text-introduce">
+								<h3>介绍一下与众不同的你</h3>
+								<textarea
+									name="introduce"
+									id="stuIntroduce"
+									cols="30"
+									rows="10"
+									maxlength="400"
+									placeholder="让我们看到你的闪光点，录取的概率会增加哦！"></textarea>
+								<div class="error" aria-live="polite" id="introduceV">
+									请按照要求填写！
+								</div>
+							</div>
+							<div class="phone">
+								<div class="phone-content">
+									<div class="numberIn">手机号码</div>
+									<input
+										class="fu"
+										type="text"
+										maxlength="11"
+										name="stuPhone"
+										id="stuPhone" />
+								</div>
+								<div
+									style="
+										float: right;
+										background-color: #fff;
+										border-radius: 35px;
+									">
+									<input
+										type="button"
+										class="sendSMS"
+										id="sendSMSButton"
+										onclick="sendSMS(this)"
+										value="发送验证码" />
+									<input
+										type="text"
+										id="smsCode"
+										maxlength="4"
+										placeholder="验证码" />
+									<div class="error" id="smsV">请输入正确的数字验证码！</div>
+								</div>
+							</div>
+							<div class="error" id="stuPhoneV" style="font-weight: bold">
+								请输入你的真实手机号码！
+							</div>
+
+							<!-- 发送数据到后台服务器 -->
+							<button class="apply" type="button" id="signUp">提交</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<div class="footer" style="margin-top: 50px">
+			<div>
+				<span>UI设计：高铮</span>
+				|
+				<span
+					>前端：梁婧宁
+					<a href="https://zzzheng.com" target="_blank">郑赫</a> 闫正心</span
+				>
+				|
+				<span>后端：<a href="https://zzzheng.com" target="_blank">郑赫</a></span>
+			</div>
+			<div>
+				<span>网站贡献者：skyLab全体成员</span>
+			</div>
+			<div>
+				<span>©2022</span> | <span>辽宁省沈阳市沈阳师范大学软件学院skyLab</span> |
+				<span><a href="https://beian.miit.gov.cn/">辽ICP备2021011233号-2</a></span>
+			</div>
+		</div>
+		<script src="./js/signUp.js"></script>
+	</body>
+</html>
